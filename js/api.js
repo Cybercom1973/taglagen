@@ -4,12 +4,12 @@ const TrafikverketAPI = {
 
     escapeXml: function(str) {
         if (!str) return '';
-        return str.replace(/[<>&'"/g, function(c) {
+        return str.replace(/[<>&'"\\]/g, function(c) {
             switch (c) {
                 case '<': return '&lt;';
                 case '>': return '&gt;';
                 case '&': return '&amp;';
-                case '': return '&apos;';
+                case "'": return '&apos;';
                 case '"': return '&quot;';
             }
         });
@@ -57,7 +57,6 @@ const TrafikverketAPI = {
         return this.request(query);
     },
 
-    // Hämta exakt position för ett tåg - uppdaterad enligt schema 1.1
     getTrainPosition: function(trainNumber) {
         const query = `
             <QUERY objecttype="TrainPosition" schemaversion="1.1" limit="1">
@@ -80,7 +79,6 @@ const TrafikverketAPI = {
         return this.request(query);
     },
 
-    // Hämta alla aktiva tågpositioner
     getAllActiveTrainPositions: function() {
         const query = `
             <QUERY objecttype="TrainPosition" schemaversion="1.1">
@@ -98,7 +96,6 @@ const TrafikverketAPI = {
         return this.request(query);
     },
 
-    // Hämta positioner för flera tåg
     getTrainPositions: function(trainNumbers) {
         if (!trainNumbers || trainNumbers.length === 0) {
             return $.Deferred().resolve({ RESPONSE: { RESULT: [{ TrainPosition: [] }] } });
