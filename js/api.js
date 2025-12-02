@@ -9,7 +9,7 @@ const TrafikverketAPI = {
                 case '<': return '&lt;';
                 case '>': return '&gt;';
                 case '&': return '&amp;';
-                case '\'': return '&apos;';
+                case '': return '&apos;';
                 case '"': return '&quot;';
             }
         });
@@ -57,34 +57,68 @@ const TrafikverketAPI = {
         return this.request(query);
     },
 
-    getTrainPosition: function(trainIdent) {
+    // Hämta exakt position för ett tåg - uppdaterad enligt schema 1.1
+    getTrainPosition: function(trainNumber) {
         const query = `
             <QUERY objecttype="TrainPosition" schemaversion="1.1" limit="1">
                 <FILTER>
-                    <EQ name="TrainIdent" value="${this.escapeXml(trainIdent)}" />
+                    <AND>
+                        <EQ name="Train.AdvertisedTrainNumber" value="${this.escapeXml(trainNumber)}" />
+                        <EQ name="Status.Active" value="true" />
+                    </AND>
                 </FILTER>
-                <INCLUDE>TrainIdent</INCLUDE>
+                <INCLUDE>Train.AdvertisedTrainNumber</INCLUDE>
+                <INCLUDE>Train.OperationalTrainNumber</INCLUDE>
+                <INCLUDE>Position.WGS84</INCLUDE>
+                <INCLUDE>Position.SWEREF99TM</INCLUDE>
+                <INCLUDE>Speed</INCLUDE>
+                <INCLUDE>Bearing</INCLUDE>
+                <INCLUDE>TimeStamp</INCLUDE>
+                <INCLUDE>Status.Active</INCLUDE>
+            </QUERY>
+        `;
+        return this.request(query);
+    },
+
+    // Hämta alla aktiva tågpositioner
+    getAllActiveTrainPositions: function() {
+        const query = `
+            <QUERY objecttype="TrainPosition" schemaversion="1.1">
+                <FILTER>
+                    <EQ name="Status.Active" value="true" />
+                </FILTER>
+                <INCLUDE>Train.AdvertisedTrainNumber</INCLUDE>
+                <INCLUDE>Train.OperationalTrainNumber</INCLUDE>
                 <INCLUDE>Position.WGS84</INCLUDE>
                 <INCLUDE>Speed</INCLUDE>
                 <INCLUDE>Bearing</INCLUDE>
-                <INCLUDE>TrackPart</INCLUDE>
                 <INCLUDE>TimeStamp</INCLUDE>
             </QUERY>
         `;
         return this.request(query);
     },
 
-    getTrainPositionsOnTrack: function(trackPart) {
+    // Hämta positioner för flera tåg
+    getTrainPositions: function(trainNumbers) {
+        if (!trainNumbers || trainNumbers.length === 0) {
+            return $.Deferred().resolve({ RESPONSE: { RESULT: [{ TrainPosition: [] }] } });
+        }
+        const trainFilters = trainNumbers.map(num => 
+            `<EQ name="Train.AdvertisedTrainNumber" value="${this.escapeXml(num)}" />`
+        ).join('');
         const query = `
             <QUERY objecttype="TrainPosition" schemaversion="1.1">
                 <FILTER>
-                    <LIKE name="TrackPart" value="${this.escapeXml(trackPart)}%" />
+                    <AND>
+                        <OR>${trainFilters}</OR>
+                        <EQ name="Status.Active" value="true" />
+                    </AND>
                 </FILTER>
-                <INCLUDE>TrainIdent</INCLUDE>
+                <INCLUDE>Train.AdvertisedTrainNumber</INCLUDE>
+                <INCLUDE>Train.OperationalTrainNumber</INCLUDE>
                 <INCLUDE>Position.WGS84</INCLUDE>
                 <INCLUDE>Speed</INCLUDE>
                 <INCLUDE>Bearing</INCLUDE>
-                <INCLUDE>TrackPart</INCLUDE>
                 <INCLUDE>TimeStamp</INCLUDE>
             </QUERY>
         `;
@@ -95,7 +129,6 @@ const TrafikverketAPI = {
         if (!locationSignatures || locationSignatures.length === 0) {
             return $.Deferred().resolve({ RESPONSE: { RESULT: [{ TrainAnnouncement: [] }] } });
         }
-        const today = new Date().toISOString().split('T')[0];
         const now = new Date();
         const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
         const twoHoursLater = new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString();
