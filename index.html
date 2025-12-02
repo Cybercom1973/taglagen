@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tågläget v2</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🚂 Tågläget v2</h1>
+        <p class="subtitle">Med realtidspositioner</p>
+        
+        <div class="search-box">
+            <input type="text" id="train-input" placeholder="Ange tågnummer..." autofocus>
+            <button id="search-btn">Sök</button>
+        </div>
+        
+        <div id="error-message" class="error"></div>
+        
+        <div class="info-box">
+            <h3>Nyheter i v2:</h3>
+            <ul>
+                <li>📍 Exakta tågpositioner mellan stationer</li>
+                <li>🚄 Visar hastighet för varje tåg</li>
+                <li>🧭 Bättre riktningslogik med bearing</li>
+                <li>📊 Sortering efter kilometer på bandelen</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registrerad'))
+                .catch(err => console.log('SW fel:', err));
+        }
+    </script>
+</body>
+</html>
