@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tågläget v2</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-link">← Tillbaka</a>
+            <h1 id="train-label">Tåg</h1>
+            <div id="train-speed" class="speed-display"></div>
+            <button id="refresh-btn">🔄 Uppdatera</button>
+        </div>
+        
+        <div id="last-update" class="last-update"></div>
+        <div id="loading" class="loading">Laddar tågdata...</div>
+        <div id="error-message" class="error"></div>
+        
+        <table id="train-table">
+            <thead>
+                <tr>
+                    <th>DRIFTPLATS</th>
+                    <th>TÅG I RIKTNINGEN</th>
+                    <th>MÖTANDE</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script src="js/train.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registrerad'))
+                .catch(err => console.log('SW fel:', err));
+        }
+    </script>
+</body>
+</html>
