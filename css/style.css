@@ -1,281 +1,547 @@
+/* --- RESET & BASICS --- */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background-color: #1a1a2e;
-    color: #eee;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121212; /* Mörk bakgrund */
+    color: #e0e0e0;
     min-height: 100vh;
-    padding: 10px;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #fff;
-}
-
-.subtitle {
-    text-align: center;
-    color: #888;
-    margin-bottom: 20px;
-}
-
-/* Sökruta */
-.search-box {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- HEADER (Gemensam för alla sidor) --- */
+header {
+    display: flex;
+    align-items: center;
     justify-content: center;
-}
-
-.search-box input {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     padding: 12px 16px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    background: #2d2d44;
-    color: #fff;
-    width: 200px;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #333;
 }
 
-.search-box input:focus {
-    outline: 2px solid #4a9eff;
-}
-
-.search-box button {
-    padding: 12px 24px;
-    font-size: 16px;
+.settings-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
     border: none;
-    border-radius: 8px;
-    background: #4a9eff;
-    color: #fff;
+    font-size: 1.5rem;
     cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
     transition: background 0.2s;
 }
 
-.search-box button:hover {
-    background: #3a8eef;
+.settings-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-/* Info-box */
-.info-box {
-    background: #2d2d44;
+.logo {
+    font-size: 24px;
+    margin-right: 12px;
+}
+
+header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* --- SÖKSIDAN (index.html) --- */
+.search-page {
     padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-container {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.search-container h2 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+#train-number {
+    width: 100%;
+    padding: 16px;
+    padding-right: 50px;
+    font-size: 18px;
+    background-color: #2c2c2c;
+    border: 2px solid #333;
     border-radius: 8px;
-    margin-top: 30px;
+    color: #fff;
+    transition: border-color 0.2s;
 }
 
-.info-box h3 {
-    margin-bottom: 10px;
-    color: #4a9eff;
+#train-number:focus {
+    outline: none;
+    border-color: #4da6ff;
 }
 
-.info-box ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.info-box li {
-    padding: 5px 0;
-    color: #ccc;
-}
-
-/* Header */
-.header {
+.clear-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 50px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.back-link {
-    color: #4a9eff;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-
-#train-label {
-    flex: 1;
-    margin: 0;
-    font-size: 24px;
-}
-
-.speed-display {
-    background: #2d2d44;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #4a9eff;
-}
-
-#refresh-btn {
-    padding: 8px 16px;
-    font-size: 14px;
+.search-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    background-color: #f5a623;
+    color: #121212;
     border: none;
     border-radius: 8px;
-    background: #2d2d44;
-    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-btn:active {
+    background-color: #d48806;
+    transform: scale(0.98);
+}
+
+/* Senaste sökningar */
+.recent-searches h3 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+.recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #333;
     cursor: pointer;
 }
 
-#refresh-btn:hover {
-    background: #3d3d54;
+.recent-item:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.recent-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
+
+.recent-train {
+    font-size: 16px;
+    font-weight: 500;
 }
 
-/* Tabell */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #16213e;
-    border-radius: 8px;
-    overflow: hidden;
+.delete-recent {
+    background: none;
+    border: none;
+    color: #666;
+    padding: 10px;
+    font-size: 18px;
 }
 
-thead {
-    background: #0f3460;
+/* --- TÅGVYN (train.html) --- */
+
+/* Sub-header med tåginfo och stäng-knapp */
+.train-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #2c2c2c;
+    border-bottom: 1px solid #444;
+    position: sticky;
+    top: 54px; /* Justera om huvud-headerns höjd ändras */
+    z-index: 999;
 }
 
-th {
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 12px;
-    color: #888;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-td {
-    padding: 10px 8px;
-    border-bottom: 1px solid #2d2d44;
-    vertical-align: top;
-}
-
-tr:hover {
-    background: #1f2b47;
-}
-
-/* Statusfärger */
-.delayed {
-    color: #ff6b6b;
-}
-
-.on-time {
-    color: #51cf66;
-}
-
-.minor-delay {
-    color: #ffd43b;
-}
-
-/* Tåglänkar */
-.train-link {
-    color: #4a9eff;
-    text-decoration: none;
-    display: inline-block;
-    margin: 2px 0;
-}
-
-.train-link:hover {
-    text-decoration: underline;
-}
-
-/* Stationslänkar */
-.station-link {
+.train-label {
+    font-size: 16px;
+    font-weight: 700;
     color: #fff;
-    text-decoration: none;
 }
 
-.station-link:hover {
-    color: #4a9eff;
-}
-
-/* Mitt tåg markering */
-.current-train-row {
-    background: #1a3a5c !important;
-}
-
-.current-train-box {
-    background: #4a9eff;
+.close-btn {
+    background: rgba(255,255,255,0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #fff;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: bold;
-    display: inline-block;
+    font-size: 18px;
 }
 
-/* Spacer row - mitt tågs position */
-.spacer-row td {
-    background: #0f3460;
-    padding: 8px;
-    text-align: center;
-    font-weight: bold;
-    color: #4a9eff;
-}
-
-/* Loading och fel */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #888;
-}
-
-.error {
-    background: #ff6b6b22;
-    color: #ff6b6b;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 10px 0;
-    display: none;
+.train-view {
+    padding-bottom: 80px; /* Plats för refresh-knappen */
 }
 
 .last-update {
-    text-align: right;
-    font-size: 12px;
+    text-align: center;
+    font-size: 11px;
     color: #666;
-    margin-bottom: 10px;
+    padding: 8px 0;
 }
 
-/* Ankomst/Avgång */
-.activity-type {
+/* --- TABELLEN (Mobilanpassad) --- */
+.train-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Sticky Header för tabellen */
+.train-table thead th {
+    position: sticky;
+    top: 110px; /* Header + Sub-header */
+    background-color: #121212;
+    z-index: 998;
+    padding: 8px 4px;
+    text-align: left;
     font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    border-bottom: 2px solid #333;
+}
+
+.train-table tbody td {
+    padding: 8px 4px;
+    border-bottom: 1px solid #222;
+    vertical-align: top;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Kolumnbredder */
+.station-cell {
+    width: 20%;
+    font-weight: 600;
+    color: #ddd;
+    word-break: break-all;
+}
+
+.same-direction-cell {
+    width: 40%;
+    background-color: rgba(255,255,255,0.02);
+}
+
+.meeting-cell {
+    width: 40%;
+}
+
+/* Länkar till stationer */
+.station-link {
+    border-bottom: none;
+}
+
+/* Oannonserade (tekniska) driftplatser */
+.unannounced-station .station-link {
+    color: #555;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* Externa driftplatser (från andra tåg) */
+.external-station {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.external-station .station-link::before {
+    content: "↳ ";
     color: #888;
 }
 
-/* Responsiv */
-@media (max-width: 600px) {
-    th, td {
-        padding: 8px 4px;
-        font-size: 13px;
+/* Tåg-items i listan */
+.train-item {
+    margin-bottom: 6px;
+    display: block;
+}
+
+.train-item a {
+    color: #bbb;
+    font-weight: 500;
+}
+
+/* Eget tåg (Boxen) */
+.current-train-box {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    background-color: rgba(77, 166, 255, 0.15);
+    border: 1px solid #4da6ff;
+    border-radius: 6px;
+    padding: 6px 4px;
+    color: #fff;
+    font-weight: 700;
+    margin: 4px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Glow-effekt för raden vi är på */
+.current-position-glow {
+    background: linear-gradient(90deg, rgba(77, 166, 255, 0.1) 0%, rgba(0,0,0,0) 80%);
+    border-left: 3px solid #4da6ff;
+}
+
+/* Statusfärger */
+.on-time { color: #4caf50; font-weight: 700; }
+.delayed { color: #ff5252; font-weight: 700; }
+
+/* --- MELLANRUM / SPÅR-INDIKATOR --- */
+.spacer-row td {
+    height: 40px; /* Tillräcklig höjd för tågboxen */
+    background-color: #121212; /* Samma som bakgrunden */
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+    position: relative;
+    
+    /* Skapa en streckad linje (spåret) i mitten */
+    background-image: linear-gradient(to bottom, transparent 48%, #444 49%, #444 51%, transparent 52%);
+}
+
+/* Styla tågboxen när den ligger i mellanrummet */
+.spacer-row .current-train-box {
+    margin: 0 auto;
+    width: auto;
+    min-width: 140px;
+    position: relative;
+    z-index: 2; /* Ligger ovanpå det streckade spåret */
+    background-color: #1e1e1e; /* Mörk bakgrund så inte strecket syns igenom texten */
+    border: 1px solid #4da6ff;
+    box-shadow: 0 0 10px rgba(77, 166, 255, 0.4); /* Extra glow */
+}
+
+/* --- REFRESH KNAPP (Fixed Bottom) --- */
+.refresh-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(5px);
+    padding: 12px 20px;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    z-index: 2000;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+.refresh-btn {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 12px 30px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 300px;
+}
+
+.refresh-btn:active {
+    background-color: #444;
+    transform: translateY(1px);
+}
+
+.loading {
+    padding-top: 50px;
+    font-size: 14px;
+    color: #888;
+}
+
+.error-message {
+    color: #ff5252;
+    background: rgba(255, 82, 82, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 82, 82, 0.3);
+    margin-top: 15px;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Settings Overlay */
+.settings-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-overlay.active {
+    display: flex;
+}
+
+/* Settings Popup */
+.settings-popup {
+    background: #2a2a2a;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #444;
+}
+
+.settings-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.settings-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.settings-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.settings-body {
+    padding: 1rem;
+}
+
+.setting-item {
+    margin-bottom: 1.25rem;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item label {
+    display: block;
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.setting-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.setting-item input[type="number"] {
+    width: 80px;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.setting-hint {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.settings-footer {
+    padding: 1rem;
+    border-top: 1px solid #444;
+}
+
+.save-settings-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.save-settings-btn:hover {
+    background: #45a049;
+}
+
+/* --- DESKTOP TWEAKS --- */
+@media (min-width: 768px) {
+    .container {
+        max-width: 600px;
+        border-left: 1px solid #333;
+        border-right: 1px solid #333;
     }
     
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
+    .train-table tbody td {
+        font-size: 14px;
     }
     
-    #train-label {
-        font-size: 20px;
-    }
-    
-    .search-box {
-        flex-direction: column;
-    }
-    
-    .search-box input {
-        width: 100%;
+    .current-train-box {
+        width: auto;
+        padding: 4px 10px;
     }
 }

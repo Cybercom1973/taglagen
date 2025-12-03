@@ -3,42 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tågläget v2</title>
+    <title>Tågläge - Sök tåg</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a1a2e">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🚂 Tågläget v2</h1>
-        <p class="subtitle">Med realtidspositioner</p>
-        
-        <div class="search-box">
-            <input type="text" id="train-input" placeholder="Ange tågnummer..." autofocus>
-            <button id="search-btn">Sök</button>
-        </div>
-        
-        <div id="error-message" class="error"></div>
-        
-        <div class="info-box">
-            <h3>Nyheter i v2:</h3>
-            <ul>
-                <li>📍 Exakta tågpositioner mellan stationer</li>
-                <li>🚄 Visar hastighet för varje tåg</li>
-                <li>🧭 Bättre riktningslogik med bearing</li>
-                <li>📊 Sortering efter kilometer på bandelen</li>
-            </ul>
+        <header>
+            
+            <div class="logo">📍</div>
+            <h1>Tågläge</h1>
+            <button type="button" id="settings-toggle" class="settings-toggle" aria-label="Inställningar">⚙️</button>
+        </header>
+        <div class="settings-overlay" id="settings-overlay">
+            <div class="settings-popup">
+                <div class="settings-header">
+                    <h3>⚙️ Inställningar</h3>
+                    <button type="button" id="settings-close" class="settings-close" aria-label="Stäng">✕</button>
+                </div>
+                <div class="settings-body">
+    <div class="setting-item">
+        <label for="max-stations">Antal trafikplatser att visa:</label>
+        <div class="setting-input-row">
+            <input type="number" id="max-stations" min="0" max="50" value="0">
+            <span class="setting-hint">(0 = alla)</span>
         </div>
     </div>
+    <div class="setting-item">
+        <label for="hide-stationary-minutes">Dölj stillastående tåg efter (min):</label>
+        <div class="setting-input-row">
+            <input type="number" id="hide-stationary-minutes" min="1" max="120" value="30">
+        </div>
+    </div>
+    <div class="setting-item">
+        <label for="hide-departed-minutes">Dölj avgångna tåg efter (min):</label>
+        <div class="setting-input-row">
+            <input type="number" id="hide-departed-minutes" min="1" max="60" value="15">
+        </div>
+    </div>
+</div>
+                <div class="settings-footer">
+                    <button type="button" id="save-settings-btn" class="save-settings-btn">Spara</button>
+                </div>
+            </div>
+        </div>
+        
+        <main class="search-page">
+            <div class="search-container">
+                <h2>Sök efter tåg</h2>
+                <form id="search-form">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="train-number" placeholder="Ange tågnummer (t.ex. 521)" autocomplete="off">
+                        <button type="button" id="clear-btn" class="clear-btn" style="display: none;">✕</button>
+                    </div>
+                    <button type="submit" class="search-btn">Sök</button>
+                </form>
+                <div id="error-message" class="error-message"></div>
+            </div>
+            
+            <div class="recent-searches" id="recent-searches">
+                <h3>Senaste sökningar</h3>
+                <ul id="recent-list"></ul>
+            </div>
+            
+
+        </main>
+    </div>
     
+    <script src="js/jquery.min.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('SW registrerad'))
-                .catch(err => console.log('SW fel:', err));
-        }
-    </script>
 </body>
 </html>
