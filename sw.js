@@ -1,53 +1,50 @@
-const CACHE_NAME = 'taglage-v8';
-
+const CACHE_NAME = 'taglaget-v2-cache-v1';
 const urlsToCache = [
-  './',
-  './index. html',
-  './train.html',
-  './css/style.css',
-  './js/app. js',
-  './js/train.js',
-  './js/api.js'
+    './',
+    './index.html',
+    './train.html',
+    './css/style.css',
+    './js/api.js',
+    './js/app.js',
+    './js/train.js',
+    './manifest.json'
 ];
 
-self. addEventListener('install', function(event) {
-  self.skipWaiting();
-  
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      // Hämta och cacha varje fil individuellt
-      return Promise.allSettled(
-        urlsToCache. map(url => {
-          return fetch(url).then(response => {
-            if (response.ok) {
-              return cache.put(url, response);
-            }
-            console.warn('Fil hittades inte:', url, response.status);
-          }). catch(err => {
-            console.warn('Kunde inte hämta fil:', url, err);
-          });
-        })
-      );
-    })
-  );
-});
-
-self.addEventListener('activate', function(event) {
-  event.waitUntil(clients.claim());
-  
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames. filter(name => name !== CACHE_NAME). map(name => caches.delete(name))
-      );
-    })
-  );
+self.addEventListener('install', function(event) {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(function(cache) {
+                console.log('Cache öppnad');
+                return cache.addAll(urlsToCache);
+            })
+    );
 });
 
 self.addEventListener('fetch', function(event) {
-  if (event.request. url.includes('api.trafikinfo. trafikverket. se')) return;
+    if (event.request.url.includes('trafikinfo.trafikverket.se')) {
+        return;
+    }
+    event.respondWith(
+        caches.match(event.request)
+            .then(function(response) {
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
+    );
+});
 
-  event.respondWith(
-    fetch(event.request).catch(() => caches. match(event.request))
-  );
+self.addEventListener('activate', function(event) {
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.filter(function(cacheName) {
+                    return cacheName !== CACHE_NAME;
+                }).map(function(cacheName) {
+                    return caches.delete(cacheName);
+                })
+            );
+        })
+    );
 });

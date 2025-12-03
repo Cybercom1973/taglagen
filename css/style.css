@@ -1,547 +1,404 @@
-/* --- RESET & BASICS --- */
+/* Grundläggande mörkt tema - svart som i appen */
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
+html {
+    font-size: 16px;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #121212; /* Mörk bakgrund */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
     color: #e0e0e0;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.container {
-    max-width: 100%;
+. container {
+    max-width: 600px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* --- HEADER (Gemensam för alla sidor) --- */
-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: 12px 16px;
-    background-color: #1e1e1e;
-    border-bottom: 1px solid #333;
-}
-
-.settings-toggle {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background 0.2s;
-}
-
-.settings-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.logo {
-    font-size: 24px;
-    margin-right: 12px;
-}
-
-header h1 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #fff;
-}
-
-/* --- SÖKSIDAN (index.html) --- */
-.search-page {
-    padding: 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.search-container {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-.search-container h2 {
-    margin-bottom: 16px;
-    font-size: 16px;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.search-input-wrapper {
-    position: relative;
-    margin-bottom: 12px;
-}
-
-#train-number {
-    width: 100%;
-    padding: 16px;
-    padding-right: 50px;
-    font-size: 18px;
-    background-color: #2c2c2c;
-    border: 2px solid #333;
-    border-radius: 8px;
-    color: #fff;
-    transition: border-color 0.2s;
-}
-
-#train-number:focus {
-    outline: none;
-    border-color: #4da6ff;
-}
-
-.clear-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 50px;
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 18px;
-    background-color: #f5a623;
-    color: #121212;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.search-btn:active {
-    background-color: #d48806;
-    transform: scale(0.98);
-}
-
-/* Senaste sökningar */
-.recent-searches h3 {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 10px;
-    padding-left: 5px;
-}
-
-.recent-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background-color: #1e1e1e;
-    border-bottom: 1px solid #333;
-    cursor: pointer;
-}
-
-.recent-item:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
-.recent-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
-
-.recent-train {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.delete-recent {
-    background: none;
-    border: none;
-    color: #666;
     padding: 10px;
-    font-size: 18px;
 }
 
-/* --- TÅGVYN (train.html) --- */
-
-/* Sub-header med tåginfo och stäng-knapp */
-.train-header {
+/* Header */
+.header {
     display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 0;
+    border-bottom: 1px solid #333333;
+    margin-bottom: 10px;
+}
+
+.back-link {
+    color: #64b5f6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+. back-link:hover {
+    text-decoration: underline;
+}
+
+#train-label {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+#train-speed {
+    font-size: 0.9em;
+    color: #4CAF50;
+}
+
+/* Uppdatera-knapp */
+.update-section {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background-color: #2c2c2c;
-    border-bottom: 1px solid #444;
-    position: sticky;
-    top: 54px; /* Justera om huvud-headerns höjd ändras */
-    z-index: 999;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
 }
 
-.train-label {
+#refresh-btn {
+    background-color: #333333;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
     font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-}
-
-.close-btn {
-    background: rgba(255,255,255,0.1);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 18px;
+    gap: 8px;
+    touch-action: manipulation;
 }
 
-.train-view {
-    padding-bottom: 80px; /* Plats för refresh-knappen */
+#refresh-btn:hover,
+#refresh-btn:active {
+    background-color: #444444;
 }
 
-.last-update {
-    text-align: center;
-    font-size: 11px;
-    color: #666;
-    padding: 8px 0;
-}
-
-/* --- TABELLEN (Mobilanpassad) --- */
-.train-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-/* Sticky Header för tabellen */
-.train-table thead th {
-    position: sticky;
-    top: 110px; /* Header + Sub-header */
-    background-color: #121212;
-    z-index: 998;
-    padding: 8px 4px;
-    text-align: left;
-    font-size: 11px;
-    color: #888;
-    text-transform: uppercase;
-    border-bottom: 2px solid #333;
-}
-
-.train-table tbody td {
-    padding: 8px 4px;
-    border-bottom: 1px solid #222;
-    vertical-align: top;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-/* Kolumnbredder */
-.station-cell {
-    width: 20%;
-    font-weight: 600;
-    color: #ddd;
-    word-break: break-all;
-}
-
-.same-direction-cell {
-    width: 40%;
-    background-color: rgba(255,255,255,0.02);
-}
-
-.meeting-cell {
-    width: 40%;
-}
-
-/* Länkar till stationer */
-.station-link {
-    border-bottom: none;
-}
-
-/* Oannonserade (tekniska) driftplatser */
-.unannounced-station .station-link {
-    color: #555;
-    font-weight: normal;
+#last-update {
+    color: #888888;
     font-size: 12px;
 }
 
-/* Externa driftplatser (från andra tåg) */
-.external-station {
-    opacity: 0.7;
-    font-style: italic;
+/* Laddning och felmeddelanden */
+#loading {
+    text-align: center;
+    padding: 40px;
+    color: #888888;
 }
 
-.external-station .station-link::before {
-    content: "↳ ";
-    color: #888;
+#error-message {
+    background-color: #330000;
+    color: #ff6b6b;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #660000;
 }
 
-/* Tåg-items i listan */
-.train-item {
-    margin-bottom: 6px;
-    display: block;
+/* Tabell */
+#train-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #000000;
+    table-layout: fixed;
 }
 
-.train-item a {
-    color: #bbb;
+#train-table thead {
+    background-color: #1a1a1a;
+}
+
+#train-table th {
+    padding: 12px 6px;
+    text-align: left;
+    font-weight: 600;
+    color: #888888;
+    font-size: 11px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #333333;
+}
+
+#train-table th:first-child {
+    width: 22%;
+}
+
+#train-table th:nth-child(2),
+#train-table th:nth-child(3) {
+    width: 39%;
+}
+
+#train-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #333333;
+    vertical-align: top;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+#train-table tbody tr:hover {
+    background-color: #1a1a1a;
+}
+
+/* Stationslänkar - VIT färg */
+.station-link {
+    color: #ffffff ! important;
+    text-decoration: none;
     font-weight: 500;
 }
 
-/* Eget tåg (Boxen) */
-.current-train-box {
+.station-link:hover {
+    text-decoration: underline;
+    color: #ffffff ! important;
+}
+
+/* Tåglänkar - standard grön (i tid) */
+. train-link {
+    color: #4CAF50;
+    text-decoration: none;
     display: inline-block;
-    width: 100%;
-    text-align: center;
-    background-color: rgba(77, 166, 255, 0.15);
-    border: 1px solid #4da6ff;
-    border-radius: 6px;
-    padding: 6px 4px;
-    color: #fff;
-    font-weight: 700;
-    margin: 4px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-style: italic;
+    margin-bottom: 3px;
+    padding: 2px 0;
 }
 
-/* Glow-effekt för raden vi är på */
-.current-position-glow {
-    background: linear-gradient(90deg, rgba(77, 166, 255, 0.1) 0%, rgba(0,0,0,0) 80%);
-    border-left: 3px solid #4da6ff;
+.train-link:hover {
+    text-decoration: underline;
 }
 
-/* Statusfärger */
-.on-time { color: #4caf50; font-weight: 700; }
-.delayed { color: #ff5252; font-weight: 700; }
-
-/* --- MELLANRUM / SPÅR-INDIKATOR --- */
-.spacer-row td {
-    height: 40px; /* Tillräcklig höjd för tågboxen */
-    background-color: #121212; /* Samma som bakgrunden */
-    border-left: none;
-    border-right: none;
-    text-align: center;
-    vertical-align: middle;
-    padding: 0;
-    position: relative;
-    
-    /* Skapa en streckad linje (spåret) i mitten */
-    background-image: linear-gradient(to bottom, transparent 48%, #444 49%, #444 51%, transparent 52%);
+/* Tågförseningar - färger på själva tåglänken */
+. train-link. on-time {
+    color: #4CAF50;
 }
 
-/* Styla tågboxen när den ligger i mellanrummet */
-.spacer-row .current-train-box {
-    margin: 0 auto;
-    width: auto;
-    min-width: 140px;
-    position: relative;
-    z-index: 2; /* Ligger ovanpå det streckade spåret */
-    background-color: #1e1e1e; /* Mörk bakgrund så inte strecket syns igenom texten */
-    border: 1px solid #4da6ff;
-    box-shadow: 0 0 10px rgba(77, 166, 255, 0.4); /* Extra glow */
+.train-link.delayed {
+    color: #f44336;
 }
 
-/* --- REFRESH KNAPP (Fixed Bottom) --- */
-.refresh-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(18, 18, 18, 0.95);
-    backdrop-filter: blur(5px);
-    padding: 12px 20px;
-    border-top: 1px solid #333;
-    display: flex;
-    justify-content: center;
-    z-index: 2000;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+/* Förseningstext */
+.on-time {
+    color: #4CAF50;
+    font-weight: bold;
 }
 
-.refresh-btn {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-    padding: 12px 30px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 300px;
+. delayed {
+    color: #f44336;
+    font-weight: bold;
 }
 
-.refresh-btn:active {
-    background-color: #444;
-    transform: translateY(1px);
+/* Aktuellt tåg - GUL RAM */
+.current-train-row {
+    background-color: #000000 !important;
 }
 
-.loading {
-    padding-top: 50px;
-    font-size: 14px;
-    color: #888;
+.current-train-row:hover {
+    background-color: #000000 !important;
 }
 
-.error-message {
-    color: #ff5252;
-    background: rgba(255, 82, 82, 0.1);
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 82, 82, 0.3);
-    margin-top: 15px;
-    font-size: 13px;
-    text-align: center;
+. current-train-box {
+    display: inline-block ! important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    padding: 6px 12px ! important;
+    border: 2px solid #FFD700 ! important;
+    font-weight: bold ! important;
+    font-size: 0.9em !important;
+    font-style: italic;
 }
 
-/* Settings Overlay */
-.settings-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1001;
-    align-items: center;
-    justify-content: center;
+/* Tåg mellan stationer */
+. between-stations {
+    background-color: #000000 !important;
 }
 
-.settings-overlay.active {
-    display: flex;
+.between-stations:hover {
+    background-color: #000000 !important;
 }
 
-/* Settings Popup */
-.settings-popup {
-    background: #2a2a2a;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+. between-stations td {
+    padding: 6px;
+    font-size: 0.9em;
+    border-bottom: 1px dashed #333333;
 }
 
-.settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #444;
+/* Stationer från mötande tåg */
+.from-other-train td:first-child {
+    font-style: italic;
+    opacity: 0.7;
 }
 
-.settings-header h3 {
-    margin: 0;
-    color: #fff;
-    font-size: 1.1rem;
+. from-other-train {
+    background-color: #0a0a0a;
 }
 
-.settings-close {
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-}
+/* ==================== */
+/* MOBILANPASSNING      */
+/* ==================== */
 
-.settings-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.settings-body {
-    padding: 1rem;
-}
-
-.setting-item {
-    margin-bottom: 1.25rem;
-}
-
-.setting-item:last-child {
-    margin-bottom: 0;
-}
-
-.setting-item label {
-    display: block;
-    color: #ccc;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-}
-
-.setting-input-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.setting-item input[type="number"] {
-    width: 80px;
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #444;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 1rem;
-}
-
-.setting-hint {
-    color: #888;
-    font-size: 0.8rem;
-}
-
-.settings-footer {
-    padding: 1rem;
-    border-top: 1px solid #444;
-}
-
-.save-settings-btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    transition: background 0.2s;
-}
-
-.save-settings-btn:hover {
-    background: #45a049;
-}
-
-/* --- DESKTOP TWEAKS --- */
-@media (min-width: 768px) {
-    .container {
-        max-width: 600px;
-        border-left: 1px solid #333;
-        border-right: 1px solid #333;
-    }
-    
-    .train-table tbody td {
+/* Mindre mobiler */
+@media (max-width: 480px) {
+    html {
         font-size: 14px;
     }
     
+    .container {
+        padding: 8px;
+    }
+    
+    . header {
+        padding: 8px 0;
+    }
+    
+    #train-label {
+        font-size: 1.2em;
+    }
+    
+    #train-speed {
+        font-size: 0.85em;
+    }
+    
+    . update-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    #refresh-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+    
+    #train-table th {
+        padding: 10px 4px;
+        font-size: 10px;
+    }
+    
+    #train-table td {
+        padding: 8px 4px;
+        font-size: 12px;
+    }
+    
+    .train-link {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    
     .current-train-box {
-        width: auto;
-        padding: 4px 10px;
+        padding: 5px 8px ! important;
+        font-size: 0.85em ! important;
+    }
+    
+    . between-stations td {
+        padding: 5px 4px;
+        font-size: 0.85em;
+    }
+}
+
+/* Mycket små mobiler */
+@media (max-width: 360px) {
+    html {
+        font-size: 13px;
+    }
+    
+    . container {
+        padding: 5px;
+    }
+    
+    #train-label {
+        font-size: 1.1em;
+    }
+    
+    #train-table th {
+        padding: 8px 3px;
+        font-size: 9px;
+    }
+    
+    #train-table td {
+        padding: 6px 3px;
+        font-size: 11px;
+    }
+    
+    . train-link {
+        font-size: 11px;
+    }
+    
+    .current-train-box {
+        padding: 4px 6px !important;
+        font-size: 0.8em !important;
+    }
+}
+
+/* Tablets och större */
+@media (min-width: 768px) {
+    . container {
+        padding: 20px;
+    }
+    
+    #train-table th {
+        padding: 14px 10px;
+        font-size: 12px;
+    }
+    
+    #train-table td {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+    
+    .train-link {
+        font-size: 14px;
+    }
+}
+
+/* Touch-vänliga klickområden */
+@media (pointer: coarse) {
+    . train-link {
+        padding: 6px 2px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .station-link {
+        padding: 6px 2px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    #refresh-btn {
+        min-height: 48px;
+    }
+}
+
+/* Landscape på mobil */
+@media (max-height: 500px) and (orientation: landscape) {
+    .header {
+        padding: 5px 0;
+        margin-bottom: 5px;
+    }
+    
+    . update-section {
+        margin-bottom: 10px;
+    }
+    
+    #train-table th,
+    #train-table td {
+        padding: 6px 4px;
+    }
+}
+
+/* Safe area för notch-mobiler */
+@supports (padding: env(safe-area-inset-top)) {
+    .container {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+        padding-bottom: env(safe-area-inset-bottom);
     }
 }

@@ -1,117 +1,197 @@
-const API_CONFIG = {
+var TrafikverketAPI = {
     apiKey: '4759059607504e98ba567480d71df54e',
-    url: 'https://api.trafikinfo.trafikverket.se/v2/data.json'
-};
+    apiUrl: 'https://api.trafikinfo.trafikverket.se/v2/data.json',
 
-function escapeXmlValue(str) {
-    if (! str) return '';
-    return String(str). replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'}[m]));
-}
-
-const TrafikverketAPI = {
-    request: function(xmlQuery) {
-        return $. ajax({
-            url: API_CONFIG. url,
-            method: 'POST',
-            contentType: 'application/xml; charset=utf-8',
-            dataType: 'json',
-            data: `<REQUEST><LOGIN authenticationkey="${API_CONFIG.apiKey}" />${xmlQuery}</REQUEST>`
+    escapeXml: function(str) {
+        if (!str) return '';
+        return String(str). replace(/[<>&'"]/g, function(c) {
+            switch (c) {
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '&': return '&amp;';
+                case "'": return '&apos;';
+                case '"': return '&quot;';
+            }
         });
     },
 
-    // 1. Hämta tågets rutt (Ditt tåg)
-    getTrainAnnouncements: function(trainNumber) {
-        const dateStr = new Date(). toLocaleDateString('sv-SE');
-        const query = `
-            <QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">
-                <FILTER>
-                    <AND>
-                        <EQ name="AdvertisedTrainIdent" value="${trainNumber}" />
-                        <GT name="AdvertisedTimeAtLocation" value="${dateStr}T00:00:00" />
-                        <LT name="AdvertisedTimeAtLocation" value="${dateStr}T23:59:59" />
-                    </AND>
-                </FILTER>
-                <INCLUDE>ActivityType</INCLUDE>
-                <INCLUDE>AdvertisedTimeAtLocation</INCLUDE>
-                <INCLUDE>AdvertisedTrainIdent</INCLUDE>
-                <INCLUDE>TechnicalTrainIdent</INCLUDE>
-                <INCLUDE>LocationSignature</INCLUDE>
-                <INCLUDE>ViaFromLocation</INCLUDE>
-                <INCLUDE>ViaToLocation</INCLUDE>
-                <INCLUDE>ToLocation</INCLUDE>
-                <INCLUDE>TimeAtLocation</INCLUDE>
-                <INCLUDE>TrackAtLocation</INCLUDE>
-                <INCLUDE>Advertised</INCLUDE>
-            </QUERY>
-        `;
-        return this. request(query);
+    request: function(query) {
+        var xmlRequest = '<REQUEST>' +
+            '<LOGIN authenticationkey="' + this.apiKey + '" />' +
+            query +
+            '</REQUEST>';
+        console.log('API Request:', xmlRequest);
+        return $. ajax({
+            url: this.apiUrl,
+            method: 'POST',
+            contentType: 'text/xml',
+            data: xmlRequest,
+            dataType: 'json'
+        });
     },
 
-    // 2. Hämta andra tåg (Möten/Samma håll)
-    getOtherTrains: function(locationSignatures) {
-        if (!locationSignatures || locationSignatures.length === 0) {
-            return Promise.resolve({ RESPONSE: { RESULT: [{ TrainAnnouncement: [] }] } });
-        }
-        const dateStr = new Date(). toLocaleDateString('sv-SE');
-        const locationFilters = locationSignatures.map(l => `<EQ name="LocationSignature" value="${l}" />`).join('');
-        
-        const query = `
-            <QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">
-                <FILTER>
-                    <AND>
-                        <OR>${locationFilters}</OR>
-                        <GT name="AdvertisedTimeAtLocation" value="${dateStr}T00:00:00" />
-                        <LT name="AdvertisedTimeAtLocation" value="${dateStr}T23:59:59" />
-                        <EXISTS name="TimeAtLocation" value="true" />
-                    </AND>
-                </FILTER>
-                <INCLUDE>AdvertisedTimeAtLocation</INCLUDE>
-                <INCLUDE>AdvertisedTrainIdent</INCLUDE>
-                <INCLUDE>TechnicalTrainIdent</INCLUDE>
-                <INCLUDE>LocationSignature</INCLUDE>
-                <INCLUDE>TimeAtLocation</INCLUDE>
-                <INCLUDE>ToLocation</INCLUDE>
-                <INCLUDE>FromLocation</INCLUDE>
-                <INCLUDE>ViaToLocation</INCLUDE> <INCLUDE>ViaFromLocation</INCLUDE>
-                <INCLUDE>ActivityType</INCLUDE>   </QUERY>
-        `;
+    getTrainAnnouncements: function(trainNumber) {
+        var today = new Date().toISOString().split('T')[0];
+        var query = '<QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">' +
+            '<FILTER>' +
+                '<AND>' +
+                    '<EQ name="AdvertisedTrainIdent" value="' + this.escapeXml(trainNumber) + '" />' +
+                    '<GTE name="AdvertisedTimeAtLocation" value="' + today + 'T00:00:00" />' +
+                    '<LTE name="AdvertisedTimeAtLocation" value="' + today + 'T23:59:59" />' +
+                '</AND>' +
+            '</FILTER>' +
+            '<INCLUDE>ActivityType</INCLUDE>' +
+            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
+            '<INCLUDE>EstimatedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>LocationSignature</INCLUDE>' +
+            '<INCLUDE>TimeAtLocation</INCLUDE>' +
+            '<INCLUDE>ToLocation</INCLUDE>' +
+            '<INCLUDE>FromLocation</INCLUDE>' +
+            '<INCLUDE>TrackAtLocation</INCLUDE>' +
+            '<INCLUDE>Canceled</INCLUDE>' +
+            '</QUERY>';
         return this.request(query);
     },
 
-    // 3.  Hämta alla tåg på samma linje baserat på destination/ursprung
-    getTrainsOnLine: function(fromLocation, toLocation) {
-        const dateStr = new Date(). toLocaleDateString('sv-SE');
-        const safeFromLocation = escapeXmlValue(fromLocation);
-        const safeToLocation = escapeXmlValue(toLocation);
-        const query = `
-            <QUERY objecttype="TrainAnnouncement" schemaversion="1. 6" orderby="AdvertisedTimeAtLocation">
-                <FILTER>
-                    <AND>
-                        <OR>
-                            <EQ name="ToLocation.LocationName" value="${safeToLocation}" />
-                            <EQ name="FromLocation.LocationName" value="${safeFromLocation}" />
-                        </OR>
-                        <GT name="AdvertisedTimeAtLocation" value="${dateStr}T00:00:00" />
-                        <LT name="AdvertisedTimeAtLocation" value="${dateStr}T23:59:59" />
-                        <EXISTS name="TimeAtLocation" value="true" />
-                    </AND>
-                </FILTER>
-                <INCLUDE>AdvertisedTimeAtLocation</INCLUDE>
-                <INCLUDE>AdvertisedTrainIdent</INCLUDE>
-                <INCLUDE>TechnicalTrainIdent</INCLUDE>
-                <INCLUDE>LocationSignature</INCLUDE>
-                <INCLUDE>ActivityType</INCLUDE>
-                <INCLUDE>TimeAtLocation</INCLUDE>
-                <INCLUDE>ToLocation</INCLUDE>
-                <INCLUDE>FromLocation</INCLUDE>
-                <INCLUDE>ViaToLocation</INCLUDE>
-                <INCLUDE>ViaFromLocation</INCLUDE>
-                <INCLUDE>TrackAtLocation</INCLUDE>
-                <INCLUDE>Advertised</INCLUDE>
-            </QUERY>
-        `;
+    getTrainPosition: function(trainNumber) {
+        var query = '<QUERY objecttype="TrainPosition" namespace="järnväg.trafikinfo" schemaversion="1.0">' +
+            '<FILTER>' +
+                '<EQ name="Train.AdvertisedTrainNumber" value="' + this.escapeXml(trainNumber) + '" />' +
+            '</FILTER>' +
+            '<INCLUDE>Train.AdvertisedTrainNumber</INCLUDE>' +
+            '<INCLUDE>Position.WGS84</INCLUDE>' +
+            '<INCLUDE>Speed</INCLUDE>' +
+            '<INCLUDE>Bearing</INCLUDE>' +
+            '<INCLUDE>TimeStamp</INCLUDE>' +
+            '</QUERY>';
         return this. request(query);
+    },
+
+    getTrainPositions: function(trainNumbers) {
+        if (!trainNumbers || trainNumbers.length === 0) {
+            return $. Deferred().resolve({ RESPONSE: { RESULT: [{ TrainPosition: [] }] } });
+        }
+        var self = this;
+        var limitedTrains = trainNumbers.slice(0, 30);
+        var trainFilters = limitedTrains.map(function(num) {
+            return '<EQ name="Train.AdvertisedTrainNumber" value="' + self.escapeXml(num) + '" />';
+        }). join('');
+        var query = '<QUERY objecttype="TrainPosition" namespace="järnväg.trafikinfo" schemaversion="1.0">' +
+            '<FILTER>' +
+                '<OR>' + trainFilters + '</OR>' +
+            '</FILTER>' +
+            '<INCLUDE>Train.AdvertisedTrainNumber</INCLUDE>' +
+            '<INCLUDE>Position.WGS84</INCLUDE>' +
+            '<INCLUDE>Speed</INCLUDE>' +
+            '<INCLUDE>Bearing</INCLUDE>' +
+            '<INCLUDE>TimeStamp</INCLUDE>' +
+            '</QUERY>';
+        return this. request(query);
+    },
+
+    getOtherTrains: function(locationSignatures, excludeTrainIdent) {
+        if (!locationSignatures || locationSignatures.length === 0) {
+            return $. Deferred().resolve({ RESPONSE: { RESULT: [{ TrainAnnouncement: [] }] } });
+        }
+        var self = this;
+        var now = new Date();
+        var thirtyMinAgo = new Date(now.getTime() - 30 * 60 * 1000). toISOString();
+        var oneHourLater = new Date(now.getTime() + 60 * 60 * 1000). toISOString();
+        var locationFilters = locationSignatures.map(function(sig) {
+            return '<EQ name="LocationSignature" value="' + self.escapeXml(sig) + '" />';
+        }).join('');
+        var query = '<QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">' +
+            '<FILTER>' +
+                '<AND>' +
+                    '<OR>' + locationFilters + '</OR>' +
+                    '<GTE name="AdvertisedTimeAtLocation" value="' + thirtyMinAgo + '" />' +
+                    '<LTE name="AdvertisedTimeAtLocation" value="' + oneHourLater + '" />' +
+                    '<NE name="AdvertisedTrainIdent" value="' + this.escapeXml(excludeTrainIdent) + '" />' +
+                    '<EXISTS name="TimeAtLocation" value="true" />' +
+                '</AND>' +
+            '</FILTER>' +
+            '<INCLUDE>ActivityType</INCLUDE>' +
+            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
+            '<INCLUDE>EstimatedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>LocationSignature</INCLUDE>' +
+            '<INCLUDE>TimeAtLocation</INCLUDE>' +
+            '<INCLUDE>ToLocation</INCLUDE>' +
+            '<INCLUDE>FromLocation</INCLUDE>' +
+            '<INCLUDE>Canceled</INCLUDE>' +
+            '</QUERY>';
+        return this.request(query);
+    },
+
+    // Hämta ALLA announcements för specifika tåg (för att få oannonserade driftplatser)
+    getTrainAnnouncementsForTrains: function(trainNumbers) {
+        if (!trainNumbers || trainNumbers.length === 0) {
+            return $.Deferred().resolve({ RESPONSE: { RESULT: [{ TrainAnnouncement: [] }] } });
+        }
+        var self = this;
+        var today = new Date().toISOString().split('T')[0];
+        var limitedTrains = trainNumbers. slice(0, 20);
+        var trainFilters = limitedTrains.map(function(num) {
+            return '<EQ name="AdvertisedTrainIdent" value="' + self.escapeXml(num) + '" />';
+        }).join('');
+        var query = '<QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">' +
+            '<FILTER>' +
+                '<AND>' +
+                    '<OR>' + trainFilters + '</OR>' +
+                    '<GTE name="AdvertisedTimeAtLocation" value="' + today + 'T00:00:00" />' +
+                    '<LTE name="AdvertisedTimeAtLocation" value="' + today + 'T23:59:59" />' +
+                    '<EXISTS name="TimeAtLocation" value="true" />' +
+                '</AND>' +
+            '</FILTER>' +
+            '<INCLUDE>ActivityType</INCLUDE>' +
+            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
+            '<INCLUDE>EstimatedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>LocationSignature</INCLUDE>' +
+            '<INCLUDE>TimeAtLocation</INCLUDE>' +
+            '<INCLUDE>ToLocation</INCLUDE>' +
+            '<INCLUDE>FromLocation</INCLUDE>' +
+            '<INCLUDE>Canceled</INCLUDE>' +
+            '</QUERY>';
+        return this.request(query);
+    },
+     // Hämta HELA tidtabellen för specifika tåg (alla stopp, även utan TimeAtLocation) 
+    getTrainTimetable: function(trainNumbers) {
+        if (!trainNumbers || trainNumbers.length === 0) {
+            return $.Deferred().resolve({ RESPONSE: { RESULT: [{ TrainAnnouncement: [] }] } });
+        }
+        var self = this;
+        var today = new Date().toISOString().split('T')[0];
+        var limitedTrains = trainNumbers.slice(0, 20);
+        var trainFilters = limitedTrains.map(function(num) {
+            return '<EQ name="AdvertisedTrainIdent" value="' + self.escapeXml(num) + '" />';
+        }).join('');
+        var query = '<QUERY objecttype="TrainAnnouncement" schemaversion="1.6" orderby="AdvertisedTimeAtLocation">' +
+            '<FILTER>' +
+                '<AND>' +
+                    '<OR>' + trainFilters + '</OR>' +
+                    '<GTE name="AdvertisedTimeAtLocation" value="' + today + 'T00:00:00" />' +
+                    '<LTE name="AdvertisedTimeAtLocation" value="' + today + 'T23:59:59" />' +
+                '</AND>' +
+            '</FILTER>' +
+            '<INCLUDE>ActivityType</INCLUDE>' +
+            '<INCLUDE>AdvertisedTimeAtLocation</INCLUDE>' +
+            '<INCLUDE>AdvertisedTrainIdent</INCLUDE>' +
+            '<INCLUDE>LocationSignature</INCLUDE>' +
+            '<INCLUDE>ToLocation</INCLUDE>' +
+            '</QUERY>';
+        return this.request(query);
+    },
+    getAllTrainStations: function() {
+        var query = '<QUERY objecttype="TrainStation" namespace="rail.infrastructure" schemaversion="1.5">' +
+            '<FILTER>' +
+                '<EQ name="Prognosticated" value="true" />' +
+            '</FILTER>' +
+            '<INCLUDE>LocationSignature</INCLUDE>' +
+            '<INCLUDE>AdvertisedLocationName</INCLUDE>' +
+            '<INCLUDE>Geometry.WGS84</INCLUDE>' +
+            '</QUERY>';
+        return this.request(query);
     }
 };
-
-window.TrafikverketAPI = TrafikverketAPI;
